@@ -1,6 +1,6 @@
 [![](https://readthedocs.org/projects/biobb-template/badge/?version=latest)](https://biobb-template.readthedocs.io/en/latest/?badge=latest)
 
-# biobb_template
+# biobb_disgenet
 
 ## Introduction
 Biobb_template is a complete code template to promote and facilitate the creation of

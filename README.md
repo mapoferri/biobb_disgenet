@@ -26,7 +26,7 @@ Although the biobb_template repository is available at GitHub and thus you can c
 
 Since the Bioconda package is not ready, after the download of the directory is necessary to set up the conda environment for the right functioning:
 
-´´´
+```
 conda create conda_env/environment.yml
 
 conda activate biobb_disgenet

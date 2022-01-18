@@ -28,15 +28,15 @@ Since the Bioconda package is not ready, after the download of the directory is 
 
 ```
 conda create conda_env/environment.yml
-
 conda activate biobb_disgenet
-´´´
+```
+
 If the package is not working, set it up manually:
 
-´´´
+```
 python setup.py build
 python setup.py install
-´´´
+```
 
 ### Binary paths configuration
 

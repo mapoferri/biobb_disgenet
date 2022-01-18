@@ -20,30 +20,8 @@ If you have no experience with anaconda, please first take a look to the [New wi
 
 ### Download repository
 
-Although the biobb_template repository is available at GitHub and thus you can clone it, we strongly recommend you to [**download it compressed**](https://github.com/bioexcel/biobb_template/archive/master.zip) and start your new project from scratch. 
+Although the biobb_template repository is available at GitHub and thus you can clone it, we strongly recommend you to [**download it compressed**]and start your new project from scratch. 
 
-### Create new conda environment
-
-Once you have the project unzipped in your computer, please follow the next steps to create a new conda environment:
-
-```console
-cd biobb_template-master
-conda env create -f conda_env/environment.yml
-```
-
-### Update environment paths
-
-Edit **conda_env/biobb_template.pth** with the paths to your *biobb_template* folder. Example:
-
-```console
-/home/user_name/projects/biobb_template/
-/home/user_name/projects/biobb_template/biobb_template/biobb_template
-```
-
-Copy the edited **conda_env/biobb_template.pth** file to the site-packages folder of your environment. This folder is in */[anaconda-path]/envs/biobb_template/lib/python3.7/site-packages*, where */[anaconda-path]* is usually */anaconda3* or */opt/conda*.
-
-```console
-cp conda_env/biobb_template.pth /[anaconda-path]/envs/biobb_template/lib/python3.7/site-packages
 ```
 
 ### Activate environment
@@ -52,21 +30,6 @@ Then, activate the recently created *biobb_template* conda environment:
 
 ```console
 conda activate biobb_template
-```
-
-### Create repository
-
-This template includes some folders not standard for a biobb, such as **biobb_template/adapters/**, **biobb_template/notebooks/** or **conda_env/**. For the sake of having a pure biobb structure, you should uncomment the three last lines of the **.gitignore** file before creating a new git repository:
-
-```console
-biobb_template/adapters
-biobb_template/notebooks
-conda_env
-```
-Then, inialitize repository:
-
-```console
-git init
 ```
 
 ### Binary paths configuration

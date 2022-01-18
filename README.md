@@ -22,14 +22,20 @@ If you have no experience with anaconda, please first take a look to the [New wi
 
 Although the biobb_template repository is available at GitHub and thus you can clone it, we strongly recommend you to [**download it compressed**]and start your new project from scratch. 
 
+### Activate the env
+
+Since the Bioconda package is not ready, after the download of the directory is necessary to set up the conda environment for the right functioning:
+
+```
+conda create conda_env/environment.yml
+conda activate biobb_disgenet
 ```
 
-### Activate environment
+If the package is not working, set it up manually:
 
-Then, activate the recently created *biobb_template* conda environment:
-
-```console
-conda activate biobb_template
+```
+python setup.py build
+python setup.py install
 ```
 
 ### Binary paths configuration

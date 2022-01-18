@@ -62,7 +62,7 @@ class DDA_disgenet(BiobbObject):
         # 2.1 Modify to match constructor parameters
         # Input/Output files
         self.io_dict = { 
-                'in': {'shared_by': retrieve_by}, 
+                'in': {'retrieve_by': retrieve_by}, 
             'out': { 'output_file_path': output_file_path } 
         }
 

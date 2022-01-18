@@ -1,0 +1,58 @@
+[
+    {
+        "ref_disease": "C0002395",
+        "disease_name": "Alzheimer's Disease",
+        "similar_diseases": [
+            {
+                "disease_id": "C0241816",
+                "disease_name": "Global brain atrophy",
+                "semantic_similarity_index": 0.995430031540822
+            },
+            {
+                "disease_id": "C0235946",
+                "disease_name": "Cerebral atrophy",
+                "semantic_similarity_index": 0.986117367650573
+            },
+            {
+                "disease_id": null,
+                "disease_name": null,
+                "semantic_similarity_index": 0.983043247969328
+            },
+            {
+                "disease_id": "C0494463",
+                "disease_name": "Alzheimer Disease, Late Onset",
+                "semantic_similarity_index": 0.977507732877329
+            },
+            {
+                "disease_id": "C0750901",
+                "disease_name": "Alzheimer Disease, Early Onset",
+                "semantic_similarity_index": 0.977486900045362
+            },
+            {
+                "disease_id": "C0600359",
+                "disease_name": "Arteriosclerotic Dementia",
+                "semantic_similarity_index": 0.975666221602809
+            },
+            {
+                "disease_id": "C0011263",
+                "disease_name": "Multi-infarct dementia",
+                "semantic_similarity_index": 0.975310941498074
+            },
+            {
+                "disease_id": "C0750900",
+                "disease_name": "Alzheimer's Disease, Focal Onset",
+                "semantic_similarity_index": 0.974334202377271
+            },
+            {
+                "disease_id": null,
+                "disease_name": null,
+                "semantic_similarity_index": 0.974334202377271
+            },
+            {
+                "disease_id": "C1863052",
+                "disease_name": "ALZHEIMER DISEASE, FAMILIAL, 1",
+                "semantic_similarity_index": 0.974334202377271
+            }
+        ]
+    }
+]

@@ -153,8 +153,8 @@ def gda_disgenet(retrieve_by: str, output_file_path: str, uniprot_id: str = None
     execute the :meth:`launch() <template.template.Template.launch>` method."""
 
     return GDA_disgenet(
-                    retrieve_by=retrieve_by,
                     output_file_path=output_file_path,
+                    retrieve_by=retrieve_by,
                     properties=properties, **kwargs).launch()
 
 def main():

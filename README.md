@@ -3,8 +3,7 @@
 # biobb_disgenet
 
 ## Introduction
-Biobb_template is a complete code template to promote and facilitate the creation of
-new Biobbs by the community.
+Biobb_disgenet is a wrapped code to interrogate the DisGenet Database through its REST API. 
 Biobb (BioExcel building blocks) packages are Python building blocks that
 create new layer of compatibility and interoperability over popular
 bioinformatics tools.
@@ -12,7 +11,7 @@ The latest documentation of this package can be found in our readthedocs site:
 [latest API documentation](http://biobb_template.readthedocs.io/en/latest/).
 
 ## Version
-v3.0.0 2021.3
+v1.0.0 
 
 ## Installation
 

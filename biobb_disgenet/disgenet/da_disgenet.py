@@ -19,22 +19,28 @@ class DA_disgenet(BiobbObject):
     | Wrapper for the DisGeNET database `https://www.disgenet.org` and the  DisGeNET REST API ´https://www.disgenet.org/api/´ for downloading available collections of genes and variants associated data to human diseases.
 
     Args:
-        retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API, not mandatory, in default is obtained by gene ID (uniprot_entry, source)
+        retrieve_by (str) (Optional): Configuration params to pass for the retrieval of the association on the REST API, not mandatory, in default is obtained by gene ID (uniprot_entry, source)
         output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML. 
         properties (dict - Python dict containing the properties for the API interrogation, considering also the credentials of the user to the database):
-            * **diseaseName** (*str*) - Disease name recognized by the database.
-            * **disease_id** (*str*) - Disease id or a list of disease ids separated by commas.
-            * **source** (*str*) - Source of the associations (CURATED, INFERRED, ANIMAL_MODELS, ALL, BEFREE, CGI, CLINGEN, CLINVAR, CTD_human, CTD_mouse, CTD_rat, GENOMICS_ENGLAND, GWASCAT, GWASDB, HPO, LHGDN, MGD, ORPHANET, PSYGENET, RGD, UNIPROT).
-            * **max_dsi** (*str*) - Max value of DSI range for the gene.
-            * **min_dsi** (*str*)  - Min value of DSI range for the gene.
-            * **min_dpi** (*str*) - Min value of DPI range for the gene.
-            * **max_dpi** (*str*) - Max value of DPI range for the gene.
-            * **max_pli** (*str*) -  Max value of pLI range for the gene.
-            * **min_pli** (*str*) -  Min value of pLI range for the gene.
-            * **format** (*str*) - Format output file.
-            * **limit** (*str*) - Number of disease to retrieve.
+            * **diseaseName** (*str*) - (None) Disease name recognized by the database.
+            * **disease_id** (*str*) - (None) Disease id or a list of disease ids separated by commas.
+            * **source** (*str*) - ("ALL") Source of the associations (CURATED, INFERRED, ANIMAL_MODELS, ALL, BEFREE, CGI, CLINGEN, CLINVAR, CTD_human, CTD_mouse, CTD_rat, GENOMICS_ENGLAND, GWASCAT, GWASDB, HPO, LHGDN, MGD, ORPHANET, PSYGENET, RGD, UNIPROT).
+            * **max_dsi** (*str*) - (None) Max value of DSI range for the gene.
+            * **min_dsi** (*str*)  - (None) Min value of DSI range for the gene.
+            * **min_dpi** (*str*) - (None) Min value of DPI range for the gene.
+            * **max_dpi** (*str*) - (None) Max value of DPI range for the gene.
+            * **max_pli** (*str*) -  (None) Max value of pLI range for the gene.
+            * **min_pli** (*str*) -  (None) Min value of pLI range for the gene.
+            * **format** (*str*) - ("json") Format output file.
+            * **limit** (*str*) - (None) Number of disease to retrieve.
             * **remove_tmp** (*bool*) - (True) [WF property] Remove temporal files.
             * **restart** (*bool*) - (False) [WF property] Do not execute if output files exist.
+            * **container_path** (*str*) - (None)  Path to the binary executable of your container.
+            * **container_image** (*str*) - (None) Container Image identifier.
+            * **container_volume_path** (*str*) - ("/data") Path to an internal directory in the container.
+            * **container_working_dir** (*str*) - (None) Path to the internal CWD in the container.
+            * **container_user_id** (*str*) - (None) User number id to be mapped inside the container.
+            * **container_shell_path** (*str*) - ("/bin/bash") Path to the binary executable of the container shell.
 
     Examples:
         This is a use example of how to use the building block from Python:
@@ -100,7 +106,7 @@ class DA_disgenet(BiobbObject):
 
     @launchlogger
     def launch(self) -> int:
-        """Execute the :class:`GDA_disgenet <disgenet.GDA_disgenet.GDA_disgenet>` object."""
+        """Execute the :class:`DA_disgenet <disgenet.DA_disgenet.DA_disgenet>` object."""
         
         # 4. Setup Biobb
         if self.check_restart(): return 0
@@ -115,8 +121,8 @@ class DA_disgenet(BiobbObject):
         return self.return_code
 
 def da_disgenet(output_file_path: str, retrieve_by: str = None, properties: dict = None, **kwargs) -> int:
-    """Create :class:`Template <template.template.Template>` class and
-    execute the :meth:`launch() <template.template.Template.launch>` method."""
+    """Create :class:`DA_disgenet <disgenet.da_disgenet.DA_disgenet>` class and
+    execute the :meth:`launch() <disgenet.da_disgenet.DA_disgenet.launch>` method."""
 
     return DA_disgenet(
                     output_file_path=output_file_path,
@@ -125,23 +131,25 @@ def da_disgenet(output_file_path: str, retrieve_by: str = None, properties: dict
 
 def main():
     """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description='This class is a wrapper for an associations call of teh DisGeNET database REST API.', formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
-    parser.add_argument('--config', required=False, help='Configuration file')
+    parser = argparse.ArgumentParser(description='This class is a wrapper for an associations call of teh DisGeNET database REST API.',
+                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
+    parser.add_argument('--config', required=False, help='This file can be a YAML file, JSON file or JSON string')
 
     # 10. Include specific args of each building block following the examples. They should match step 2
     required_args = parser.add_argument_group('required arguments')
     parser.add_argument('--retrieve_by', required=False, help='Retrieval factor necessary to define the search of the associations; gene, uniprot entry, disease, source, evidence by disease, evidence by gene available choices.')
     required_args.add_argument('--output_file_path', required=True, help='Description for the output file path. Accepted formats: json, csv or html.')
+
     args = parser.parse_args()
-    args.config = args.config or "{}"
-    properties = settings.ConfReader(config=args.config).get_prop_dic()
+    config = args.config if args.config else None
+    properties = settings.ConfReader(config=config).get_prop_dic()
 
     # 11. Adapt to match Class constructor (step 2)
     # Specific call of each building block
     da_disgenet(
-             output_file_path=output_file_path, 
-             retrieve_by=retrieve_by,
-             properties=properties)
+             output_file_path=args.output_file_path,
+             retrieve_by=args.retrieve_by,
+             properties=args.properties)
 
 if __name__ == '__main__':
     main()

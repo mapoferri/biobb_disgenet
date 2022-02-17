@@ -23,19 +23,23 @@ class GA_disgenet(BiobbObject):
         retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API (gene, uniprot_entry, disease, source, evidences_gene, evidences_disease)  
         output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML. 
         properties (dict - Python dict containing the properties for the API interrogation, considering also the credentials of the user to the database):
-            * **gene_id** (*str*) - Number identification for a gene or a list of genes separated by commas recognized by the database.
-            * **uniprot_id** (*str*) - Uniprot id or a list of uniprot ids separated by commas.
-            * **source** (*str*) - Source of the associations (CURATED, INFERRED, ANIMAL_MODELS, ALL, BEFREE, CGI, CLINGEN, CLINVAR, CTD_human, CTD_mouse, CTD_rat, GENOMICS_ENGLAND, GWASCAT, GWASDB, HPO, LHGDN, MGD, ORPHANET, PSYGENET, RGD, UNIPROT).
-            * **max_dsi** (*str*) - Max value of DSI range for the gene.
-            * **min_dsi** (*str*)  - Min value of DSI range for the gene.
-            * **min_dpi** (*str*) - Min value of DPI range for the gene.
-            * **max_dpi** (*str*) - Max value of DPI range for the gene.
-            * **max_pli** (*str*) -  Max value of pLI range for the gene.
-            * **min_pli** (*str*) -  Min value of pLI range for the gene.
-            * **format** (*str*) - Format output file.
-            * **limit** (*str*) - Number of disease to retrieve.
+            * **source** (*str*) - ("ALL") Source of the associations (CURATED, INFERRED, ANIMAL_MODELS, ALL, BEFREE, CGI, CLINGEN, CLINVAR, CTD_human, CTD_mouse, CTD_rat, GENOMICS_ENGLAND, GWASCAT, GWASDB, HPO, LHGDN, MGD, ORPHANET, PSYGENET, RGD, UNIPROT).
+            * **max_dsi** (*str*) - (None) Max value of DSI range for the gene.
+            * **min_dsi** (*str*)  - (None) Min value of DSI range for the gene.
+            * **min_dpi** (*str*) - (None) Min value of DPI range for the gene.
+            * **max_dpi** (*str*) - (None) Max value of DPI range for the gene.
+            * **max_pli** (*str*) -  (None) Max value of pLI range for the gene.
+            * **min_pli** (*str*) -  (None) Min value of pLI range for the gene.
+            * **format** (*str*) - ("json") Format output file.
+            * **limit** (*str*) - (None) Number of disease to retrieve.
             * **remove_tmp** (*bool*) - (True) [WF property] Remove temporal files.
             * **restart** (*bool*) - (False) [WF property] Do not execute if output files exist.
+            * **container_path** (*str*) - (None)  Path to the binary executable of your container.
+            * **container_image** (*str*) - (None) Container Image identifier.
+            * **container_volume_path** (*str*) - ("/data") Path to an internal directory in the container.
+            * **container_working_dir** (*str*) - (None) Path to the internal CWD in the container.
+            * **container_user_id** (*str*) - (None) User number id to be mapped inside the container.
+            * **container_shell_path** (*str*) - ("/bin/bash") Path to the binary executable of the container shell.
 
     Examples:
         This is a use example of how to use the building block from Python:
@@ -99,7 +103,7 @@ class GA_disgenet(BiobbObject):
 
     @launchlogger
     def launch(self) -> int:
-        """Execute the :class:`GDA_disgenet <disgenet.GDA_disgenet.GDA_disgenet>` object."""
+        """Execute the :class:`GA_disgenet <disgenet.ga_disgenet.GA_disgenet>` object."""
         
         # 4. Setup Biobb
         if self.check_restart(): return 0
@@ -116,8 +120,8 @@ class GA_disgenet(BiobbObject):
         return self.return_code
 
 def ga_disgenet(output_file_path: str, retrieve_by: str = None , properties: dict = None, **kwargs) -> int:
-    """Create :class:`Template <template.template.Template>` class and
-    execute the :meth:`launch() <template.template.Template.launch>` method."""
+    """Create :class:`GA_disgenet <disgenet.ga_disgenet.GA_disgenet>` class and
+    execute the :meth:`launch() <disgenet.ga_disgenet.GA_disgenet.launch>` method."""
 
     return GA_disgenet(
                     output_file_path=output_file_path,
@@ -134,8 +138,8 @@ def main():
     parser.add_argument('--retrieve_by', required=False, help='Retrieval factor necessary to define the search of the associations; gene, uniprot entry, disease, source, evidence by disease, evidence by gene available choices.')
     required_args.add_argument('--output_file_path', required=True, help='Description for the output file path. Accepted formats: json, csv or html.')
     args = parser.parse_args()
-    args.config = args.config or "{}"
-    properties = settings.ConfReader(config=args.config).get_prop_dic()
+    config = args.config if args.config else None
+    properties = settings.ConfReader(config=config).get_prop_dic()
 
     # 11. Adapt to match Class constructor (step 2)
     # Specific call of each building block

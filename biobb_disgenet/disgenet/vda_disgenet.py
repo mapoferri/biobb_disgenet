@@ -11,8 +11,7 @@ from biobb_common.tools.file_utils import launchlogger
 from biobb_disgenet.disgenet.common import *
 
 
-# 1. Rename class as required
-class VDA_disgenet(BiobbObject):
+class VDADisgenet(BiobbObject):
     """
     | biobb_disgenet Variant Association Disgenet
     | This class is for downloading a Varinat Disease Associations file from DisGeNET database.
@@ -77,23 +76,16 @@ class VDA_disgenet(BiobbObject):
 
     """
 
-    # 2. Adapt input and output file paths as required. Include all files, even optional ones
-    def __init__(self, retrieve_by, output_file_path,  
-                properties = None, **kwargs) -> None:
+    def __init__(self, retrieve_by, output_file_path, properties=None, **kwargs) -> None:
         properties = properties or {}
 
-        # 2.0 Call parent class constructor
         super().__init__(properties)
 
-        # 2.1 Modify to match constructor parameters
         # Input/Output files
         self.io_dict = { 
                 'in': {'retrieve_by': retrieve_by}, 
-            'out': { 'output_file_path': output_file_path } 
+                'out': {'output_file_path': output_file_path}
         }
-
-        # 3. Include all relevant properties here as 
-        # self.property_name = properties.get('property_name', property_default_value)
 
         # Properties specific for BB
         self.gene_id = properties.get('gene_id', None)
@@ -121,55 +113,58 @@ class VDA_disgenet(BiobbObject):
         self.properties = properties
 
         # Check the properties
+        self.check_properties(properties)
 
     @launchlogger
     def launch(self) -> int:
-        """Execute the :class:`VDA_disgenet <disgenet.VDA_disgenet.VDA_disgenet>` object."""
+        """Execute the :class:`VDADisgenet <disgenet.vda_disgenet.VDADisgenet>` object."""
         
-        # 4. Setup Biobb
+        # Setup Biobb
         if self.check_restart(): return 0
         self.stage_files()
         
-        #check mandatory params that is gene_id
+        # Check mandatory params that is gene_id
         output_path = check_output_path(self.io_dict["out"]["output_file_path"], False, "output", self.properties["format"], self.out_log, self.__class__.__name__)
-        #Try1 function
+
+        # Try1 function
         if self.io_dict["in"]["retrieve_by"]:
             response = gda_vda_session("vda", self.io_dict["in"]["retrieve_by"], self.properties, self.out_log, self.global_log)
         else:
             raise SystemExit("Fundamental argument is missing, check the input parameter.")
         new_keys, request = extension_request(response, self.io_dict["in"]["retrieve_by"], self.properties)
-        auth_session(request, new_keys, output_path, self.out_log, self.global_log)   
-        return self.return_code
+        auth_session(request, new_keys, output_path, self.out_log, self.global_log)
 
-def vda_disgenet(retrieve_by: str , output_file_path: str, evidences: bool = False, properties: dict = None, **kwargs) -> int:
-    """Create :class:`Template <template.template.Template>` class and
-    execute the :meth:`launch() <template.template.Template.launch>` method."""
+        return 0
 
-    return VDA_disgenet(
-                    retrieve_by=retrieve_by,
-                    output_file_path=output_file_path,
-                    properties=properties, **kwargs).launch()
+
+def vda_disgenet(retrieve_by: str, output_file_path: str, properties: dict = None, **kwargs) -> int:
+    """Create :class:`VDADisgenet <disgenet.vda_disgenet.VDADisgenet>` class and
+    execute the :meth:`launch() <disgenet.vda_disgenet.VDADisgenet.launch>` method."""
+
+    return VDADisgenet(retrieve_by=retrieve_by,
+                       output_file_path=output_file_path,
+                       properties=properties, **kwargs).launch()
+
 
 def main():
     """Command line execution of this building block. Please check the command line documentation."""
     parser = argparse.ArgumentParser(description='This class is a wrapper for an associations call of teh DisGeNET database REST API.', formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
     parser.add_argument('--config', required=False, help='Configuration file')
-    # 10. Include specific args of each building block following the examples. They should match step 2
+
+    # Specific args of each building block
     required_args = parser.add_argument_group('required arguments')
     required_args.add_argument('--retrieve_by', required=True, help='Retrieval factor necessary to define the search of the associations; gene, uniprot entry, disease, source, evidence by disease, evidence by gene available choices.')
     required_args.add_argument('--output_file_path', required=True, help='Description for the output file path. Accepted formats: json, csv or html.')
-    args = parser.parse_args()
-    args.config = args.config or "{}"
-    properties = settings.ConfReader(config=args.config).get_prop_dic()
 
-    # 11. Adapt to match Class constructor (step 2)
+    args = parser.parse_args()
+    config = args.config if args.config else None
+    properties = settings.ConfReader(config=config).get_prop_dic()
+
     # Specific call of each building block
-    vda_disgenet(
-             retrieve_by=retrieve_by, 
-             output_file_path=output_file_path,
-             properties=properties)
+    vda_disgenet(retrieve_by=args.retrieve_by,
+                 output_file_path=args.output_file_path,
+                 properties=properties)
+
 
 if __name__ == '__main__':
     main()
-
-# 12. Complete documentation strings

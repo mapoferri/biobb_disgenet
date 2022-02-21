@@ -1,4 +1,4 @@
-[![](https://readthedocs.org/projects/biobb-template/badge/?version=latest)](https://biobb-template.readthedocs.io/en/latest/?badge=latest)
+[![](https://readthedocs.org/projects/biobb-disgenet/badge/?version=latest)](https://biobb-disgenet.readthedocs.io/en/latest/?badge=latest)
 
 # biobb_template
 

@@ -11,8 +11,7 @@ from biobb_common.tools.file_utils import launchlogger
 from biobb_disgenet.disgenet.common import *
 
 
-# 1. Rename class as required
-class DA_disgenet(BiobbObject):
+class DADisgenet(BiobbObject):
     """
     | biobb_disgenet Disease Attribute Disgenet
     | This class is for downloading a Disease Attribute request from DisGeNET database.
@@ -45,7 +44,7 @@ class DA_disgenet(BiobbObject):
     Examples:
         This is a use example of how to use the building block from Python:
 
-            from biobb_disgenet.disgenet.da_disgenet import da_disgenet
+            from biobb_disgenet.disgenet.DADisgenet import DADisgenet
 
             prop = {
                 'disease_id':'disease_id',
@@ -59,7 +58,7 @@ class DA_disgenet(BiobbObject):
                 'format': 'format',
                 'limit': 'limit'
             }
-            da_disgenet(
+            DADisgenet(
                     retrieve_by='source',
                     output_file_path='/path/to/associationsFile',
                     properties=prop)
@@ -70,22 +69,16 @@ class DA_disgenet(BiobbObject):
 
     """
 
-    # 2. Adapt input and output file paths as required. Include all files, even optional ones
-    def __init__(self, output_file_path, retrieve_by = None,
-            properties = None, **kwargs) -> None:
+    def __init__(self, output_file_path, retrieve_by=None, properties=None, **kwargs) -> None:
         properties = properties or {}
 
-        # 2.0 Call parent class constructor
         super().__init__(properties)
 
-        # 2.1 Modify to match constructor parameters
         # Input/Output files
         self.io_dict = { 
                 'in': {'retrieve_by': retrieve_by}, 
-            'out': { 'output_file_path': output_file_path } 
+                'out': {'output_file_path': output_file_path} 
         }
-
-        # 3. Include all relevant properties here as 
 
         # Properties specific for BB
         self.source = properties.get('source', "ALL")
@@ -103,39 +96,40 @@ class DA_disgenet(BiobbObject):
         self.properties = properties
 
         # Check the properties
+        self.check_properties(properties)
 
     @launchlogger
     def launch(self) -> int:
-        """Execute the :class:`DA_disgenet <disgenet.DA_disgenet.DA_disgenet>` object."""
-        
-        # 4. Setup Biobb
+        """Execute the :class:`DADisgenet <disgenet.da_disgenet.DADisgenet>` object."""
+
+        # Setup Biobb
         if self.check_restart(): return 0
         self.stage_files()
         
-        #check mandatory params that is gene_id
+        # Check mandatory params that is gene_id
         output_path = check_output_path(self.io_dict["out"]["output_file_path"], False, "output", self.properties["format"], self.out_log, self.__class__.__name__)
         response = da_session("disease", self.io_dict["in"]["retrieve_by"], self.properties, self.out_log, self.global_log)
         new_keys, request = extension_request(response, self.io_dict["in"]["retrieve_by"], self.properties)
         auth_session(request, new_keys, output_path, self.out_log, self.global_log)
 
-        return self.return_code
+        return 0
+
 
 def da_disgenet(output_file_path: str, retrieve_by: str = None, properties: dict = None, **kwargs) -> int:
-    """Create :class:`DA_disgenet <disgenet.da_disgenet.DA_disgenet>` class and
-    execute the :meth:`launch() <disgenet.da_disgenet.DA_disgenet.launch>` method."""
+    """Create :class:`DADisgenet <disgenet.da_disgenet.DADisgenet>` class and
+    execute the :meth:`launch() <disgenet.da_disgenet.DADisgenet.launch>` method."""
 
-    return DA_disgenet(
-                    output_file_path=output_file_path,
-                    retrieve_by=retrieve_by,
-                    properties=properties, **kwargs).launch()
+    return DADisgenet(output_file_path=output_file_path,
+                      retrieve_by=retrieve_by,
+                      properties=properties, **kwargs).launch()
+
 
 def main():
     """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description='This class is a wrapper for an associations call of teh DisGeNET database REST API.',
-                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
+    parser = argparse.ArgumentParser(description='This class is a wrapper for an associations call of teh DisGeNET database REST API.', formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
     parser.add_argument('--config', required=False, help='This file can be a YAML file, JSON file or JSON string')
 
-    # 10. Include specific args of each building block following the examples. They should match step 2
+    # Specific args of each building block
     required_args = parser.add_argument_group('required arguments')
     parser.add_argument('--retrieve_by', required=False, help='Retrieval factor necessary to define the search of the associations; gene, uniprot entry, disease, source, evidence by disease, evidence by gene available choices.')
     required_args.add_argument('--output_file_path', required=True, help='Description for the output file path. Accepted formats: json, csv or html.')
@@ -144,14 +138,11 @@ def main():
     config = args.config if args.config else None
     properties = settings.ConfReader(config=config).get_prop_dic()
 
-    # 11. Adapt to match Class constructor (step 2)
     # Specific call of each building block
-    da_disgenet(
-             output_file_path=args.output_file_path,
-             retrieve_by=args.retrieve_by,
-             properties=args.properties)
+    da_disgenet(output_file_path=args.output_file_path,
+                retrieve_by=args.retrieve_by,
+                properties=properties)
+
 
 if __name__ == '__main__':
     main()
-
-# 12. Complete documentation strings

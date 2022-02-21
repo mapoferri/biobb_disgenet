@@ -11,8 +11,7 @@ from biobb_common.tools.file_utils import launchlogger
 from biobb_disgenet.disgenet.common import *
 
 
-# 1. Rename class as required
-class GA_disgenet(BiobbObject):
+class GADisgenet(BiobbObject):
     """
     | biobb_disgenet Gene Attribute Disgenet
     | This class is for downloading a Gene Attribute request from DisGeNET database.
@@ -69,23 +68,16 @@ class GA_disgenet(BiobbObject):
 
     """
 
-    # 2. Adapt input and output file paths as required. Include all files, even optional ones
-    def __init__(self, output_file_path, retrieve_by = None,
-            properties = None, **kwargs) -> None:
+    def __init__(self, output_file_path, retrieve_by=None, properties=None, **kwargs) -> None:
         properties = properties or {}
 
-        # 2.0 Call parent class constructor
         super().__init__(properties)
 
-        # 2.1 Modify to match constructor parameters
         # Input/Output files
         self.io_dict = { 
                 'in': {'retrieve_by': retrieve_by}, 
-            'out': { 'output_file_path': output_file_path } 
+                'out': {'output_file_path': output_file_path}
         }
-
-        # 3. Include all relevant properties here as 
-        # self.property_name = properties.get('property_name', property_default_value)
 
         # Properties specific for BB
         self.source = properties.get('source', "ALL")
@@ -100,55 +92,53 @@ class GA_disgenet(BiobbObject):
         self.properties = properties
 
         # Check the properties
+        self.check_properties(properties)
 
     @launchlogger
     def launch(self) -> int:
-        """Execute the :class:`GA_disgenet <disgenet.ga_disgenet.GA_disgenet>` object."""
+        """Execute the :class:`GADisgenet <disgenet.ga_disgenet.GADisgenet>` object."""
         
-        # 4. Setup Biobb
+        # Setup Biobb
         if self.check_restart(): return 0
         self.stage_files()
         
-        #check mandatory params that is gene_id
+        # Check mandatory params that is gene_id
         output_path = check_output_path(self.io_dict["out"]["output_file_path"], False, "output", self.properties["format"], self.out_log, self.__class__.__name__)
-        
         response = ga_va_session("gene", self.io_dict["in"]["retrieve_by"], self.properties, self.out_log, self.global_log)
         new_keys, request = extension_request(response, self.io_dict["in"]["retrieve_by"], self.properties)
-        
         auth_session(request, new_keys, output_path, self.out_log, self.global_log)
 
-        return self.return_code
+        return 0
 
-def ga_disgenet(output_file_path: str, retrieve_by: str = None , properties: dict = None, **kwargs) -> int:
-    """Create :class:`GA_disgenet <disgenet.ga_disgenet.GA_disgenet>` class and
-    execute the :meth:`launch() <disgenet.ga_disgenet.GA_disgenet.launch>` method."""
 
-    return GA_disgenet(
-                    output_file_path=output_file_path,
-                    retrieve_by=retrieve_by,
-                    properties=properties, **kwargs).launch()
+def ga_disgenet(output_file_path: str, retrieve_by: str = None, properties: dict = None, **kwargs) -> int:
+    """Create :class:`GADisgenet <disgenet.ga_disgenet.GADisgenet>` class and
+    execute the :meth:`launch() <disgenet.ga_disgenet.GADisgenet.launch>` method."""
+
+    return GADisgenet(output_file_path=output_file_path,
+                      retrieve_by=retrieve_by,
+                      properties=properties, **kwargs).launch()
+
 
 def main():
     """Command line execution of this building block. Please check the command line documentation."""
     parser = argparse.ArgumentParser(description='This class is a wrapper for an associations call of teh DisGeNET database REST API.', formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
     parser.add_argument('--config', required=False, help='Configuration file')
 
-    # 10. Include specific args of each building block following the examples. They should match step 2
+    # Specific args of each building block
     required_args = parser.add_argument_group('required arguments')
     parser.add_argument('--retrieve_by', required=False, help='Retrieval factor necessary to define the search of the associations; gene, uniprot entry, disease, source, evidence by disease, evidence by gene available choices.')
     required_args.add_argument('--output_file_path', required=True, help='Description for the output file path. Accepted formats: json, csv or html.')
+
     args = parser.parse_args()
     config = args.config if args.config else None
     properties = settings.ConfReader(config=config).get_prop_dic()
 
-    # 11. Adapt to match Class constructor (step 2)
     # Specific call of each building block
-    ga_disgenet(
-             output_file_path=output_file_path,
-             retrieve_by=retrieve_by,
-             properties=properties)
+    ga_disgenet(output_file_path=args.output_file_path,
+                retrieve_by=args.retrieve_by,
+                properties=properties)
+
 
 if __name__ == '__main__':
     main()
-
-# 12. Complete documentation strings

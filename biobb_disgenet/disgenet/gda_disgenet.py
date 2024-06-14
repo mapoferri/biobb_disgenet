@@ -5,7 +5,7 @@ import argparse
 import shutil
 from pathlib import PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import  settings
+from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_disgenet.disgenet.common import *
@@ -18,8 +18,8 @@ class GDADisgenet(BiobbObject):
     | Wrapper for the DisGeNET database `https://www.disgenet.org` and the  DisGeNET REST API ´https://www.disgenet.org/api/´ for downloading available collections of genes and variants associated data to human diseases.
 
     Args:
-        retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API (gene, uniprot_entry, disease, source, evidences_gene, evidences_disease)  
-        output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML. 
+        retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API (gene, uniprot_entry, disease, source, evidences_gene, evidences_disease)
+        output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML.
         properties (dict - Python dict containing the properties for the API interrogation, considering also the credentials of the user to the database):
             * **gene_id** (*str*) - Number identification for a gene or a list of genes separated by commas recognized by the database.
             * **disease** (*str*) - Disease id or a list of disease separated by commas.
@@ -42,17 +42,18 @@ class GDADisgenet(BiobbObject):
             * **offset** (*str*) - Starting offset of the page.
             * **remove_tmp** (*bool*) - (True) [WF property] Remove temporal files.
             * **restart** (*bool*) - (False) [WF property] Do not execute if output files exist.
+            * **sandbox_path** (*str*) - ("./") [WF property] Parent path to the sandbox directory.
 
     Examples:
         This is a use example of how to use the building block from Python:
 
             from biobb_disgenet.disgenet.gda_disgenet import gda_disgenet
 
-            prop = { 
+            prop = {
                 'gene_id': 'gene_id',
                 'disease_id': 'disease_id',
                 'uniprot_id': 'uniprot_id',
-                'source': 'source', 
+                'source': 'source',
                 'min_score': 'min_score',
                 'max_score': 'max_score',
                 'min_ei': 'min_ei',
@@ -64,7 +65,7 @@ class GDADisgenet(BiobbObject):
                 'min_dpi': 'min_dpi',
                 'max_dpi': 'max_dpi',
                 'min_pli': 'min_pli',
-                'max_pli':'max_pli', 
+                'max_pli':'max_pli',
                 'format': 'format',
                 'limit': 'limit',
                 'min_year':'min_year',
@@ -76,7 +77,7 @@ class GDADisgenet(BiobbObject):
                     properties=prop)
     Info:
 
-        retrieve_by can be: 
+        retrieve_by can be:
             gene, uniprot, source, evidences
 
     """
@@ -87,15 +88,15 @@ class GDADisgenet(BiobbObject):
         super().__init__(properties)
 
         # Input/Output files
-        self.io_dict = { 
-                'in': {'retrieve_by': retrieve_by}, 
-                'out': {'output_file_path': output_file_path}
+        self.io_dict = {
+            'in': {'retrieve_by': retrieve_by},
+            'out': {'output_file_path': output_file_path}
         }
 
         # Properties specific for BB
         self.gene_id = properties.get('gene_id', None)
         self.disease_id = properties.get('disease_id', None)
-        self.source = properties.get('source', "ALL") 
+        self.source = properties.get('source', "ALL")
         self.vocabulary = properties.get('vocabulary', None)
         self.min_score = properties.get('min_score', None)
         self.max_score = properties.get('max_score', None)
@@ -122,11 +123,12 @@ class GDADisgenet(BiobbObject):
     @launchlogger
     def launch(self) -> int:
         """Execute the :class:`GDADisgenet <disgenet.gda_disgenet.GDADisgenet>` object."""
-        
+
         # Setup Biobb
-        if self.check_restart(): return 0
+        if self.check_restart():
+            return 0
         self.stage_files()
-        
+
         # Check if the output path exists and mandatory params are there
         output_path = check_output_path(self.io_dict["out"]["output_file_path"], False, "output", self.properties["format"], self.out_log, self.__class__.__name__)
         check_mandatory_property(self.properties, self.io_dict["in"]["retrieve_by"], self.out_log, self.__class__.__name__)
@@ -137,7 +139,7 @@ class GDADisgenet(BiobbObject):
         else:
             raise SystemExit("Fundamental argument is missing, check the input parameter.")
         new_keys, request = extension_request(response, self.io_dict["in"]["retrieve_by"], self.properties)
-        auth_session(request, new_keys, output_path, self.out_log, self.global_log)       
+        auth_session(request, new_keys, output_path, self.out_log, self.global_log)
 
         return 0
 
@@ -173,4 +175,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

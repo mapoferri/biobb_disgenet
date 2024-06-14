@@ -5,7 +5,7 @@ import argparse
 import shutil
 from pathlib import PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import  settings
+from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_disgenet.disgenet.common import *
@@ -19,8 +19,8 @@ class GADisgenet(BiobbObject):
 
     Args:
 
-        retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API (gene, uniprot_entry, disease, source, evidences_gene, evidences_disease)  
-        output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML. 
+        retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API (gene, uniprot_entry, disease, source, evidences_gene, evidences_disease)
+        output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML.
         properties (dict - Python dict containing the properties for the API interrogation, considering also the credentials of the user to the database):
             * **source** (*str*) - ("ALL") Source of the associations (CURATED, INFERRED, ANIMAL_MODELS, ALL, BEFREE, CGI, CLINGEN, CLINVAR, CTD_human, CTD_mouse, CTD_rat, GENOMICS_ENGLAND, GWASCAT, GWASDB, HPO, LHGDN, MGD, ORPHANET, PSYGENET, RGD, UNIPROT).
             * **max_dsi** (*str*) - (None) Max value of DSI range for the gene.
@@ -33,6 +33,7 @@ class GADisgenet(BiobbObject):
             * **limit** (*str*) - (None) Number of disease to retrieve.
             * **remove_tmp** (*bool*) - (True) [WF property] Remove temporal files.
             * **restart** (*bool*) - (False) [WF property] Do not execute if output files exist.
+            * **sandbox_path** (*str*) - ("./") [WF property] Parent path to the sandbox directory.
             * **container_path** (*str*) - (None)  Path to the binary executable of your container.
             * **container_image** (*str*) - (None) Container Image identifier.
             * **container_volume_path** (*str*) - ("/data") Path to an internal directory in the container.
@@ -47,13 +48,13 @@ class GADisgenet(BiobbObject):
 
             prop = {
                 'gene_id': '351',
-                'source': 'source', 
+                'source': 'source',
                 'min_dsi': 'min_dsi',
                 'max_dsi': 'max_dsi',
                 'min_dpi': 'min_dpi',
                 'max_dpi': 'max_dpi',
                 'min_pli': 'min_pli',
-                'max_pli':'max_pli', 
+                'max_pli':'max_pli',
                 'format': 'format',
                 'limit': 'limit'
             }
@@ -63,7 +64,7 @@ class GADisgenet(BiobbObject):
                     properties=prop)
 
     Info:
-        retrieve_by can be: 
+        retrieve_by can be:
             gene, uniprot, source
 
     """
@@ -74,9 +75,9 @@ class GADisgenet(BiobbObject):
         super().__init__(properties)
 
         # Input/Output files
-        self.io_dict = { 
-                'in': {'retrieve_by': retrieve_by}, 
-                'out': {'output_file_path': output_file_path}
+        self.io_dict = {
+            'in': {'retrieve_by': retrieve_by},
+            'out': {'output_file_path': output_file_path}
         }
 
         # Properties specific for BB
@@ -97,11 +98,12 @@ class GADisgenet(BiobbObject):
     @launchlogger
     def launch(self) -> int:
         """Execute the :class:`GADisgenet <disgenet.ga_disgenet.GADisgenet>` object."""
-        
+
         # Setup Biobb
-        if self.check_restart(): return 0
+        if self.check_restart():
+            return 0
         self.stage_files()
-        
+
         # Check mandatory params that is gene_id
         output_path = check_output_path(self.io_dict["out"]["output_file_path"], False, "output", self.properties["format"], self.out_log, self.__class__.__name__)
         response = ga_va_session("gene", self.io_dict["in"]["retrieve_by"], self.properties, self.out_log, self.global_log)

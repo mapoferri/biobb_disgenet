@@ -5,7 +5,7 @@ import argparse
 import shutil
 from pathlib import PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import  settings
+from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_disgenet.disgenet.common import *
@@ -20,9 +20,9 @@ class VADisgenet(BiobbObject):
     Args:
 
         retrieve_by (str): Configuration params to pass for the retrieval of the association on the REST API, not mandatory, in default is obtained by gene ID (uniprot_entry, source)
-        output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML. 
+        output_file_path (str): Path to the output file, that can be in format TSV, JSON or XML.
         properties (dict - Python dict containing the properties for the API interrogation, considering also the credentials of the user to the database):
-            
+
             * **gene_id** (*str*) - Number identification for a gene or a list of genes separated by commas recognized by the database.
             * **variant_id** (*str*) - Uniprot id or a list of variant ids separated by commas.
             * **source** (*str*) - Source of the associations (CURATED, INFERRED, ANIMAL_MODELS, ALL, BEFREE, CGI, CLINGEN, CLINVAR, CTD_human, CTD_mouse, CTD_rat, GENOMICS_ENGLAND, GWASCAT, GWASDB, HPO, LHGDN, MGD, ORPHANET, PSYGENET, RGD, UNIPROT).
@@ -36,21 +36,22 @@ class VADisgenet(BiobbObject):
             * **limit** (*str*) - Number of disease to retrieve.
             * **remove_tmp** (*bool*) - (True) [WF property] Remove temporal files.
             * **restart** (*bool*) - (False) [WF property] Do not execute if output files exist.
+            * **sandbox_path** (*str*) - ("./") [WF property] Parent path to the sandbox directory.
 
     Examples:
         This is a use example of how to use the building block from Python:
 
             from biobb_disgenet.disgenet.ga_disgenet import ga_disgenet
 
-            prop = { 
+            prop = {
                 'variant_id': 'variant_id',
-                'source': 'source', 
+                'source': 'source',
                 'min_dsi': 'min_dsi',
                 'max_dsi': 'max_dsi',
                 'min_dpi': 'min_dpi',
                 'max_dpi': 'max_dpi',
                 'min_pli': 'min_pli',
-                'max_pli':'max_pli', 
+                'max_pli':'max_pli',
                 'format': 'format',
                 'limit': 'limit'
             }
@@ -69,9 +70,9 @@ class VADisgenet(BiobbObject):
         super().__init__(properties)
 
         # Input/Output files
-        self.io_dict = { 
-                'in': {'retrieve_by': retrieve_by}, 
-                'out': {'output_file_path': output_file_path}
+        self.io_dict = {
+            'in': {'retrieve_by': retrieve_by},
+            'out': {'output_file_path': output_file_path}
         }
 
         # Properties specific for BB
@@ -94,11 +95,12 @@ class VADisgenet(BiobbObject):
     @launchlogger
     def launch(self) -> int:
         """Execute the :class:`VADisgenet <disgenet.va_disgenet.VADisgenet>` object."""
-        
+
         # Setup Biobb
-        if self.check_restart(): return 0
+        if self.check_restart():
+            return 0
         self.stage_files()
-        
+
         # Check mandatory params that is gene_id
         output_path = check_output_path(self.io_dict["out"]["output_file_path"], False, "output", self.properties["format"], self.out_log, self.__class__.__name__)
         response = ga_va_session("variant", self.io_dict["in"]["retrieve_by"], self.properties, self.out_log, self.global_log)
@@ -108,7 +110,7 @@ class VADisgenet(BiobbObject):
         return 0
 
 
-def va_disgenet(output_file_path: str, retrieve_by: str = None , properties: dict = None, **kwargs) -> int:
+def va_disgenet(output_file_path: str, retrieve_by: str = None, properties: dict = None, **kwargs) -> int:
     """Create :class:`VADisgenet <disgenet.va_disgenet.VADisgenet>` class and
     execute the :meth:`launch() <disgenet.va_disgenet.VADisgenet.launch>` method."""
 
